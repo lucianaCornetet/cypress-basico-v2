@@ -19,7 +19,7 @@ document.querySelector('#phone-checkbox')
 document.querySelector('button[type="submit"]')
   .addEventListener('click', function(event) {
     event.preventDefault()
-    const firstNameField = document.getElementById('firstName')
+    //const firstNameField = document.getElementById('firstName')
     const lastNameField = document.getElementById('lastName')
     const emailField = document.getElementById('email')
     const textareaField = document.getElementById('open-text-area')
@@ -42,7 +42,7 @@ document.querySelector('button[type="submit"]')
     lastNameField.value = ''
     emailField.value = ''
     textareaField.value = ''
-    phoneField.value = '0'
+    phoneField.value = ''
     productField.selectedIndex = 0
     helpRadio.checked = true
     emailCheckbox.checked = false
