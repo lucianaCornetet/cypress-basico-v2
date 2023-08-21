@@ -1,6 +1,8 @@
 /// <reference types="Cypress" />
 
 describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste, primeiro argumento é um texto com a descrição do teste, o segundo argumento é uma função de callback
+    const THREE_SECONDS_IN_MS = 3000
+
     beforeEach(function() {
         cy.visit('./src/index.html') //visita a url
     })
@@ -12,9 +14,11 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
 
     //exercício extra 1 seção 3
     it('preenche os campos obrigatórios e envia o formulário', function() {
+        cy.clock() //trava o relógio do navegador  
+
         //string longa para teste do delay no campo como podemos ajudar
         const longText = 'Teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste.'
-        
+
         cy.get('#firstName').type('Luciana') //escreve o nome
         cy.get('#lastName').type('Rodrigues') //escreve o sobrenome
         cy.get('#email').type('lucianacornetet@gmail.com') //escreve o email
@@ -22,18 +26,26 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
         cy.contains('button', 'Enviar').click() //aperta no botão enviar
 
         cy.get('.success').should('be.visible') //verifica se foi validada e se está visivel
+        cy.tick(THREE_SECONDS_IN_MS) //adiata três segundos o relógio do navegador
+        cy.get('.success').should('not.be.visible') //verifica que a mensagem desapareceu
     })
 
     //exercício extra 2 seção 3
-    it('exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', function(){
+    //Cypress._.times(5, function(){
+      it('exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', function(){
+        cy.clock()
+      
         cy.get('#firstName').type('Luciana') //escreve o nome
         cy.get('#lastName').type('Rodrigues') //escreve o sobrenome
         cy.get('#email').type('lucianacornetetgmail.com') //escreve o email
         cy.get('#open-text-area').type('Teste') //escreve o como podemos te ajudar
         cy.contains('button', 'Enviar').click() //aperta no botão enviar
 
-        cy.get('.error').should('be.visible')
-    })
+        cy.get('.error').should('be.visible') //exibe mensagem de erro
+        cy.tick(THREE_SECONDS_IN_MS) //adiata três segundos o relógio do navegador
+        cy.get('.error').should('not.be.visible') //verifica que a mensagem desapareceu
+      })
+    //})
 
     //exercício extra 3 seção 3
     it('campo telefone continua vazio se o valor for não-numérico', function(){
@@ -46,6 +58,8 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
 
     //exercício extra 4 seção 3
     it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', function(){
+        cy.clock()  
+
         cy.get('#firstName').type('Luciana') //escreve o nome
         cy.get('#lastName').type('Rodrigues') //escreve o sobrenome
         cy.get('#email').type('lucianacornetet@gmail.com') //escreve o email
@@ -54,6 +68,8 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
         cy.contains('button', 'Enviar').click() //aperta no botão enviar
 
         cy.get('.error').should('be.visible')
+        cy.tick(THREE_SECONDS_IN_MS) //adiata três segundos o relógio do navegador
+        cy.get('.error').should('not.be.visible') //verifica que a mensagem desapareceu
     })
      
     //exercício extra 5 seção 3
@@ -82,16 +98,24 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
 
     //exercício extra 6 seção 3
     it('exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', function(){
+        cy.clock()
+      
         cy.contains('button', 'Enviar').click() //aperta no botão enviar
 
         cy.get('.error').should('be.visible') //exibe mensagem de erro
+        cy.tick(THREE_SECONDS_IN_MS) //adiata três segundos o relógio do navegador
+        cy.get('.error').should('not.be.visible') //verifica que a mensagem desapareceu
     })
 
     //exercício extra 7 seção 3
     it('envia o formuário com sucesso usando um comando customizado', function(){
+        cy.clock()
+      
         cy.fillMandatoryFieldsAndSubmit()
 
         cy.get('.success').should('be.visible') //verifica se foi validada e se está visivel
+        cy.tick(THREE_SECONDS_IN_MS) //adiata três segundos o relógio do navegador
+        cy.get('.success').should('not.be.visible') //verifica que a mensagem desapareceu
     })
 
     //exercício seção 4
@@ -197,5 +221,61 @@ describe('Central de Atendimento ao Cliente TAT', function() { //switch do teste
       cy.visit('./src/privacy.html')
         
       cy.contains('Talking About Testing').should('be.visible')
+    })
+
+    //exercício clock e tick seção 12
+    //verificar se a mensagem desapareceu depois de três segundos nos exercícios anteriores
+
+    //exercício extra 1 seção 12
+    //repete o teste do exercício extra 2 seção 3 cinco vezes
+
+    //exercício extra 2 seção 12
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke()', function(){
+      cy.get('.success')
+        .should('not.be.visible')
+        .invoke('show')
+        .should('be.visible')
+        .and('contain', 'Mensagem enviada com sucesso.')
+        .invoke('hide')
+        .should('not.be.visible')
+
+      cy.get('.error')
+        .should('not.be.visible')
+        .invoke('show')
+        .should('be.visible')
+        .and('contain', 'Valide os campos obrigatórios!')
+        .invoke('hide')
+        .should('not.be.visible')
+    })
+
+    //exercício extra 3 seção 12
+    it('preenche a area de texto usando o comando invoke', function(){
+      const longText = Cypress._.repeat('Test ', 100)
+
+      cy.get('#open-text-area')
+        .invoke('val', longText)
+        .should('have.value', longText)
+    })
+
+    //exercício extra 4 seção 12
+    it('faz uma requisição HTTP', function(){
+      cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html')
+        .should(function(response){
+          const { status, statusText, body} = response //desestrutura o status, statusText e o body
+          expect(status).to.equal(200)
+          expect(statusText).to.equal('OK')
+          expect(body).to.include('CAC TAT')
+        })
+    })
+
+    //desafio encontre o gato seção 13
+    it.only('Encontra o gato escondido', function(){
+      cy.get('#cat')
+        .invoke('show')
+        .should('be.visible')
+      cy.get('#title')
+        .invoke('text', 'CAT TAT')
+      cy.get('#subtitle')
+        .invoke('text', 'Eu amo gatos!')
     })
 }) 
